@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopping Cart - Ghulshan Bibi</title>
+<style>
+body{font-family:Arial;background:#f5f7fb;margin:0;padding:20px}
+h1{text-align:center;color:#333}
+.container{display:flex;gap:20px;max-width:1000px;margin:auto;flex-wrap:wrap}
+.products{flex:2;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px}
+.product{background:white;padding:15px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,.1);text-align:center}
+.product img{width:100%;height:130px;object-fit:cover;border-radius:8px}
+.product h3{margin:10px 0 5px}
+.product p{color:#2196F3;font-weight:bold}
+button{background:#2196F3;color:white;border:none;padding:8px 12px;border-radius:5px;cursor:pointer}
+button:hover{background:#1976D2}
+.cart{flex:1;background:white;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,.1);min-width:280px;height:fit-content;position:sticky;top:20px}
+.cart-item{display:flex;justify-content:space-between;align-items:center;margin:10px 0;border-bottom:1px solid #eee;padding-bottom:8px}
+.qty{display:flex;align-items:center;gap:5px}
+.qty button{padding:2px 8px;background:#eee;color:#333}
+.total{font-size:20px;font-weight:bold;margin-top:15px;text-align:right}
+.remove{color:red;cursor:pointer;margin-left:10px}
+</style>
+</head>
+<body>
+<h1>🛒 Shopping Cart - Task 12</h1>
+<div class="container">
+<div class="products" id="products"></div>
+<div class="cart">
+<h2>Your Cart</h2>
+<div id="cartItems"><p>Cart is empty</p></div>
+<div class="total">Total: $<span id="total">0</span></div>
+<p style="text-align:center;font-size:12px;margin-top:20px">Made by Ghulshan Bibi | ID:198 | Task 12</p>
+</div>
+</div>
+
+<script>
+const productsData=[
+{id:1,name:"Wireless Headphone",price:59,image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",desc:"High Bass"},
+{id:2,name:"Smart Watch",price:89,image:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300",desc:"Fitness Tracker"},
+{id:3,name:"Running Shoes",price:75,image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300",desc:"Comfortable"},
+{id:4,name:"Backpack",price:45,image:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300",desc:"Travel Bag"},
+{id:5,name:"Sunglasses",price:29,image:"https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300",desc:"UV Protection"},
+{id:6,name:"T-Shirt",price:19,image:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300",desc:"Cotton"}
+];
+let cart=[];
+
+function renderProducts(){
+ document.getElementById("products").innerHTML=productsData.map(p=>`
+  <div class="product">
+   <img src="${p.image}">
+   <h3>${p.name}</h3>
+   <small>${p.desc}</small>
+   <p>$${p.price}</p>
+   <button onclick="addToCart(${p.id})">Add to Cart</button>
+  </div>
+ `).join("");
+}
+
+function addToCart(id){
+ let item=cart.find(c=>c.id===id);
+ if(item){ item.qty++; } else { let prod=productsData.find(p=>p.id===id); cart.push({...prod,qty:1}); }
+ renderCart();
+}
+
+function changeQty(id,delta){
+ let item=cart.find(c=>c.id===id);
+ if(!item) return;
+ item.qty+=delta;
+ if(item.qty<=0){ cart=cart.filter(c=>c.id!==id); }
+ renderCart();
+}
+
+function removeItem(id){ cart=cart.filter(c=>c.id!==id); renderCart(); }
+
+function renderCart(){
+ let div=document.getElementById("cartItems");
+ if(cart.length===0){ div.innerHTML="<p>Cart is empty</p>"; document.getElementById("total").innerText="0"; return; }
+ let total=0;
+ div.innerHTML=cart.map(c=>{ total+=c.price*c.qty; return `
+  <div class="cart-item">
+   <div><b>${c.name}</b><br><small>$${c.price} x ${c.qty}</small></div>
+   <div class="qty">
+    <button onclick="changeQty(${c.id},-1)">-</button>
+    <span>${c.qty}</span>
+    <button onclick="changeQty(${c.id},1)">+</button>
+    <span class="remove" onclick="removeItem(${c.id})">❌</span>
+   </div>
+  </div>
+ `}).join("");
+ document.getElementById("total").innerText=total;
+}
+renderProducts();
+</script>
+</body>
+</html>
